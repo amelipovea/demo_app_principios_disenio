@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Catálogo de Productos</h1>
+    <p>Consulta nuestros productos disponibles</p>
+</header>
+
+<main>
+    <section class="consulta">
+        <h2>Buscar producto</h2>
+
+        <div class="busqueda">
+            <input
+                    type="number"
+                    id="productoId"
+                    placeholder="Ingresa el ID"
+                    min="1"
+            >
+            <button onclick="buscarProducto()">Buscar</button>
+            <button onclick="cargarProductos()">Ver todos</button>
+        </div>
+
+        <div id="resultado"></div>
+    </section>
+
+    <section>
+        <h2>Productos disponibles</h2>
+        <div id="productos" class="productos"></div>
+    </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
