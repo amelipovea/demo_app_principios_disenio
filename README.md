@@ -1,42 +1,149 @@
-# ISWZ2202 — App base (Sesión 4-6)
+# ISWZ2202 — Catálogo de Productos
 
-App de catálogo de productos (Spring Boot). Cada llamada a la API tiene una
-latencia simulada a propósito.
+Aplicación web desarrollada con Spring Boot para gestionar y consultar un catálogo de productos. El proyecto implementa caché, el patrón Proxy, configuración CORS y un frontend independiente que consume la API REST.
 
-## Requisitos
+## Tecnologías
 
-- Java 17+ únicamente. No necesitas Maven instalado: el proyecto trae el
-  Maven Wrapper (`mvnw` / `mvnw.cmd`).
+* Java 17+
+* Spring Boot
+* Spring Cache
+* Maven Wrapper
+* HTML
+* CSS
+* JavaScript
 
-## Ejecutar
+## Arquitectura
+
+La aplicación utiliza una separación por capas y abstracciones para reducir el acoplamiento entre los componentes.
+
+```text
+Frontend
+   ↓
+ProductoController
+   ↓
+ProductoService
+   ↓
+ProxyProductoRepository
+   ↓
+RepositorioProductoEnMemoria
+```
+
+El `ProductoService` utiliza caché para evitar repetir llamadas innecesarias al repositorio. El `ProxyProductoRepository` implementa la misma abstracción que el repositorio real y delega las operaciones hacia él.
+
+## Caché
+
+Se utiliza Spring Cache para almacenar temporalmente los resultados de las consultas:
+
+* `listarTodos()` utiliza la caché `productos`.
+* `buscarPorId()` utiliza la caché `productoPorId`.
+
+El repositorio incluye una latencia simulada de 1500 ms para evidenciar la diferencia entre una consulta que accede al repositorio y una consulta atendida desde la caché.
+
+## Patrón Proxy
+
+`ProxyProductoRepository` implementa la interfaz `ProductoRepository` y actúa como intermediario entre el servicio y el repositorio real.
+
+```text
+ProductoService
+      ↓
+ProxyProductoRepository
+      ↓
+RepositorioProductoEnMemoria
+```
+
+Esto permite que el servicio dependa de la abstracción `ProductoRepository` y no directamente de la implementación concreta.
+
+## CORS
+
+Se agregó una configuración global de CORS para permitir que el frontend pueda realizar peticiones `GET` hacia la API durante el desarrollo.
+
+Las rutas de la API utilizan el prefijo:
+
+```text
+/api/**
+```
+
+## API REST
+
+La aplicación se ejecuta en:
+
+```text
+http://localhost:8080
+```
+
+### Obtener todos los productos
+
+```text
+GET /api/productos
+```
+
+### Obtener un producto por ID
+
+```text
+GET /api/productos/{id}
+```
+
+Ejemplo:
+
+```text
+GET /api/productos/1
+```
+
+## Frontend
+
+El frontend se encuentra en la carpeta:
+
+```text
+frontend/
+```
+
+Está compuesto por:
+
+```text
+frontend/
+├── index.html
+├── style.css
+└── script.js
+```
+
+Permite:
+
+* Visualizar todos los productos.
+* Buscar un producto por ID.
+* Mostrar información como nombre, categoría y precio.
+* Consumir la API REST mediante `fetch()`.
+
+Para utilizar el frontend, primero se debe ejecutar el backend y posteriormente abrir `frontend/index.html` en el navegador.
+
+## Ejecución
+
+No es necesario instalar Maven, ya que el proyecto incluye Maven Wrapper.
+
+### Windows
 
 ```bash
-# macOS / Linux
-./mvnw spring-boot:run
-
-# Windows
 mvnw.cmd spring-boot:run
 ```
 
-La API queda en `http://localhost:8080`.
+### macOS / Linux
 
 ```bash
-curl http://localhost:8080/api/productos
-curl http://localhost:8080/api/productos/1
+./mvnw spring-boot:run
 ```
 
-## Actividad (60 min · 10% · Análisis de diseño de software)
+La API estará disponible en:
 
-**Objetivo:** reforzar el conocimiento adquirido en clase sobre Java y Spring Framework.
+```text
+http://localhost:8080
+```
 
-1. Completar la aplicación desarrollada en clase.
-2. Implementar caché.
-3. Implementar el patrón proxy.
-4. Pedirle a una IA que genere un frontend para esta API. Van a encontrarse
-   con un problema de CORS entre el frontend y este backend — investiguen
-   qué lo causa y cómo se resuelve en un ambiente de desarrollo.
-5. Suban su proyecto a un repositorio de GitHub propio y entreguen el enlace
-   en la consigna.
+## Objetivo de la práctica
 
-Se evaluará el diseño de la solución (cohesión, acoplamiento, uso de
-abstracciones), no solo que la aplicación funcione.
+La práctica busca aplicar conceptos de diseño de software mediante:
+
+* Implementación de caché.
+* Uso del patrón Proxy.
+* Separación de responsabilidades.
+* Uso de abstracciones para reducir el acoplamiento.
+* Configuración de CORS.
+* Integración de un frontend con una API REST.
